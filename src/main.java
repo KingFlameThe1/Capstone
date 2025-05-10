@@ -26,7 +26,7 @@ public class main {
         }
     }
 
-     Start the network simulation
+     // Start the network simulation
     void startSimulation(ArrayList<Computer> network) {
         // Example of vulnerability scanning and attack simulation
         for (Computer computer : network) {
