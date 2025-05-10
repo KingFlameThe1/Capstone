@@ -1,7 +1,9 @@
 package src.Machines;
 //import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
+
 //import java.util.ArrayList;
 //import java.util.random.*;
 //import Math;
@@ -14,7 +16,8 @@ public class Computer{
     private String Subnet_Mask= "";
     private String Gateway = "";
     private ArrayList<Integer> ports = new ArrayList<Integer>();
-    //private ArrayList<String> vulns = new ArrayList<String>(); <-------vulnerabilities will probably be handeled in a different class rather than per computer.
+    //private ArrayList<String> vulns = new ArrayList<String>();//vulnerabilities will be handeled in a different class for easy coordination
+    private Vulnerabilities vulns;
 
     public Computer(String IPv4_addr) {
         Random rand = new Random();
@@ -22,20 +25,10 @@ public class Computer{
         MAC = genMac(rand);
         Subnet_Mask = "255.255.255.0";//can be changed later to simulate multiple subnets 
         Gateway = "192.168.0.1";//can be made into a variable to allow for simulation of multiple networks the user can attempt to access (maybe using a simulated proxy)
+        openPorts();
+        vulns = new Vulnerabilities();
     }
-/* 
-    public void computer(){
-        Random rand = new Random();
-        //ipv4 = String.valueOf(rand.nextInt(256)) + '.' + String.valueOf(rand.nextInt(256)) + '.' + String.valueOf(rand.nextInt(256)) + '.' + String.valueOf(rand.nextInt(256));
-        //ipv4 = String.valueOf(Math.random()*255 + 1) + '.' + String.valueOf(Math.random()*255 + 1) + '.' + String.valueOf(Math.random()*255 + 1) + '.' + String.valueOf(Math.random()*255 + 1);
-        ipv4 = "192.168.0." + String.valueOf(Math.random()*255 + 1);
-        MAC = genMac(rand);
-        Subnet_Mask = "255.255.255.0";//can be changed later to simulate multiple subnets 
-        Gateway = "192.168.0.1";//can be made into a variable to allow for simulation of multiple networks the user can attempt to access (maybe using a simulated proxy)
-        //vulns = [];
-        
-    }
-*/
+
     private String genMac(Random rand){
         StringBuilder macAddress = new StringBuilder();
         
@@ -47,6 +40,16 @@ public class Computer{
             }
         }
         return macAddress.toString();
+    }
+    private void openPorts(){
+        Integer[] availPorts = {20, 21, 22, 25, 53, 443};
+        Collections.addAll(this.ports, availPorts);
+        //generate open ports in this function
+    }
+    public void addOpenPort(int port){
+        if (!ports.contains(port)) {
+            ports.add(port);
+        }
     }
 
     public String getIPv4(){
@@ -61,4 +64,13 @@ public class Computer{
     public String getDefault(){
         return this.Gateway; 
     }
+
+    public void addVulnerability(Vulnerabilities.VulnerabilityType type) {
+        vulns.add(type);
+    }
+
+    public boolean isVulnerableTo(Vulnerabilities.VulnerabilityType type) {
+        return vulns.has(type);
+    }
+
 }
