@@ -6,7 +6,7 @@ public class Router {
     private String IPv4_p2;//computer's subnet
     private String IPv4_p3;//specific address in subnet -- assumed that one subnet covers range 0 to 255 and all subnets are uniform.
     
-    public void Router(){
+    public Router(){
         IPv4_p1 = "192.168.";
         IPv4_p2 = "0.";
         IPv4_p3 = "0";

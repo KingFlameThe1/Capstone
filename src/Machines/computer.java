@@ -3,6 +3,9 @@ package src.Machines;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.Set;
+
+import src.Machines.Vulnerabilities.VulnerabilityType;
 
 //import java.util.ArrayList;
 //import java.util.random.*;
@@ -71,6 +74,10 @@ public class Computer{
 
     public boolean isVulnerableTo(Vulnerabilities.VulnerabilityType type) {
         return vulns.has(type);
+    }
+
+    public Set<VulnerabilityType> vulnTypes() {
+        return vulns.getAll();
     }
 
 }
