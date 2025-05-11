@@ -1,200 +1,176 @@
 package src.ui;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import src.Machines.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import src.Machines.*;
+
 public class Command_Line {
-    private static ArrayList<Computer> network; // Network of computers
-    private static JTextArea terminalOutput;   // Terminal output
-    private static JPanel computerPanel; // Panel to display the network computers
-    private static JFrame frame; // Main window frame
-    private static List<JButton> computerButtons; // Store buttons for computers
-    private static Random random; // For simulating random events
+    private static ArrayList<Computer> network;
+    private static JTextArea terminalOutput;
+    private static JTextArea packetDetails;
+    private static JTextField commandInput;
+    private static JPanel computerPanel;
+    private static JFrame frame;
+    private static List<JButton> computerButtons;
+    private static Random random;
+    private static DefaultTableModel tableModel;
+    private static JTable packetTable;
+    private static int messageCount = 1;
 
     public static void main(String[] args) {
-        // Initialize random event generator
         random = new Random();
-
-        // Initialize main frame
-        frame = new JFrame("Network Simulation");
-        frame.setSize(800, 600);
+        frame = new JFrame("Network Simulation - Wireshark Style");
+        frame.setSize(1000, 700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        // Terminal Output area (Simulation logs)
-        terminalOutput = new JTextArea();
+        // Terminal output (bottom logs)
+        terminalOutput = new JTextArea(6, 80);
         terminalOutput.setEditable(false);
         terminalOutput.setBackground(Color.BLACK);
         terminalOutput.setForeground(Color.GREEN);
-        terminalOutput.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        JScrollPane scrollPane = new JScrollPane(terminalOutput);
+        terminalOutput.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        JScrollPane terminalScrollPane = new JScrollPane(terminalOutput);
 
-        // Command Input Field
-        JTextField commandInput = new JTextField();
+        // Command input (bottom)
+        commandInput = new JTextField();
         commandInput.setBackground(Color.BLACK);
         commandInput.setForeground(Color.WHITE);
-        commandInput.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        commandInput.setFont(new Font("Monospaced", Font.PLAIN, 13));
 
-        // Panel to display computers in the network
-        computerPanel = new JPanel();
-        computerPanel.setLayout(new GridLayout(0, 1)); // Vertical list of computers
-        JScrollPane computerScrollPane = new JScrollPane(computerPanel);
+        // Table to show simulated packets (top)
+        String[] columnNames = {"No.", "Time", "Source", "Destination", "Protocol", "Length", "Info"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        packetTable = new JTable(tableModel);
+        JScrollPane packetScrollPane = new JScrollPane(packetTable);
+        packetScrollPane.setPreferredSize(new Dimension(1000, 200));
 
-        // Button to Start Simulation
-        JButton startSimulationButton = new JButton("Start Simulation");
-        startSimulationButton.addActionListener(new ActionListener() {
+        // Packet details (middle)
+        packetDetails = new JTextArea(5, 80);
+        packetDetails.setEditable(false);
+        packetDetails.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JScrollPane detailsScrollPane = new JScrollPane(packetDetails);
+
+        // On packet table row select, show details
+        packetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                startSimulation();
-            }
-        });
-
-        // Button to Clear Terminal Output
-        JButton clearButton = new JButton("Clear");
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                terminalOutput.setText(""); // Clear terminal output
-            }
-        });
-
-        // Button to Send Message Between Computers
-        JButton sendMessageButton = new JButton("Send Message");
-        sendMessageButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-
-        // Button to Attack a Computer
-        JButton attackButton = new JButton("Attack Computer");
-        attackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                attackComputer();
-            }
-        });
-
-        // Add components to frame
-        frame.add(scrollPane, BorderLayout.CENTER);
-        frame.add(commandInput, BorderLayout.SOUTH);
-        frame.add(computerScrollPane, BorderLayout.WEST);
-
-        JPanel controlPanel = new JPanel();
-        controlPanel.add(startSimulationButton);
-        controlPanel.add(clearButton);
-        controlPanel.add(sendMessageButton);
-        controlPanel.add(attackButton);
-        frame.add(controlPanel, BorderLayout.NORTH);
-
-        // Add action listener to process commands
-        commandInput.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String command = commandInput.getText();
-                terminalOutput.append("> " + command + "\n");
-                commandInput.setText(""); // Clear input field
-
-                // Process commands
-                switch (command.toLowerCase()) {
-                    case "help":
-                        terminalOutput.append("Available commands:\n");
-                        terminalOutput.append(" - help: Show available commands\n");
-                        terminalOutput.append(" - clear: Clear the terminal\n");
-                        terminalOutput.append(" - start: Start the network simulation\n");
-                        terminalOutput.append(" - exit: Close the application\n");
-                        terminalOutput.append(" - attack [IP]: Attack a computer by IP\n");
-                        terminalOutput.append(" - send [message]: Send a message across the network\n");
-                        break;
-
-                    case "exit":
-                        System.exit(0); // Exit application
-                        break;
-
-                    default:
-                        terminalOutput.append("Unknown command: " + command + "\n");
-                        break;
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting() && packetTable.getSelectedRow() != -1) {
+                    int row = packetTable.getSelectedRow();
+                    String details = "Packet #" + tableModel.getValueAt(row, 0) + "\n"
+                            + "Time: " + tableModel.getValueAt(row, 1) + "\n"
+                            + "Source: " + tableModel.getValueAt(row, 2) + "\n"
+                            + "Destination: " + tableModel.getValueAt(row, 3) + "\n"
+                            + "Protocol: " + tableModel.getValueAt(row, 4) + "\n"
+                            + "Length: " + tableModel.getValueAt(row, 5) + "\n"
+                            + "Info: " + tableModel.getValueAt(row, 6);
+                    packetDetails.setText(details);
                 }
             }
         });
 
-        // Show the frame
+        // Left computer panel
+        computerPanel = new JPanel(new GridLayout(0, 1));
+        JScrollPane computerScrollPane = new JScrollPane(computerPanel);
+        computerScrollPane.setPreferredSize(new Dimension(250, 0));
+
+        // Controls (top)
+        JPanel controlPanel = new JPanel();
+        JButton startButton = new JButton("Start Simulation");
+        JButton clearButton = new JButton("Clear");
+        JButton sendButton = new JButton("Send Message");
+        JButton attackButton = new JButton("Attack");
+        controlPanel.add(startButton);
+        controlPanel.add(sendButton);
+        controlPanel.add(attackButton);
+        controlPanel.add(clearButton);
+
+        // Add listeners
+        startButton.addActionListener(e -> startSimulation());
+        clearButton.addActionListener(e -> terminalOutput.setText(""));
+        sendButton.addActionListener(e -> sendMessage());
+        attackButton.addActionListener(e -> attackComputer());
+
+        // Combine center panels
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(packetScrollPane, BorderLayout.NORTH);
+        centerPanel.add(detailsScrollPane, BorderLayout.CENTER);
+        centerPanel.add(terminalScrollPane, BorderLayout.SOUTH);
+
+        // Layout frame
+        frame.add(controlPanel, BorderLayout.NORTH);
+        frame.add(computerScrollPane, BorderLayout.WEST);
+        frame.add(centerPanel, BorderLayout.CENTER);
+        frame.add(commandInput, BorderLayout.SOUTH);
+
+        // Command handler
+        commandInput.addActionListener(e -> {
+            String command = commandInput.getText().trim();
+            terminalOutput.append("> " + command + "\n");
+            commandInput.setText("");
+            switch (command.toLowerCase()) {
+                case "help" -> terminalOutput.append("Available commands: help, clear, start, exit\n");
+                case "exit" -> System.exit(0);
+                default -> terminalOutput.append("Unknown command: " + command + "\n");
+            }
+        });
+
         frame.setVisible(true);
     }
 
-    // Set the network for this command line interface
-    public static void setNetwork(ArrayList<Computer> network) {
-        Command_Line.network = network;
-        displayComputers(); // Update the UI with computers in the network
+    public static void setNetwork(ArrayList<Computer> net) {
+        network = net;
+        displayComputers();
     }
 
-    // Display computers in the network in the left panel
     private static void displayComputers() {
-        computerPanel.removeAll(); // Clear existing components
+        computerPanel.removeAll();
         computerButtons = new ArrayList<>();
-        for (Computer computer : network) {
-            JButton computerButton = new JButton("IP: " + computer.getIPv4() + " Status: " + (computer.isCompromised() ? "Compromised" : "Secure"));
-            computerButton.setBackground(computer.isCompromised() ? Color.RED : Color.GREEN);
-            computerButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    showComputerDetails(computer);
-                }
-            });
-            computerButtons.add(computerButton);
-            computerPanel.add(computerButton);
+        for (Computer c : network) {
+            JButton b = new JButton("IP: " + c.getIPv4() + " Status: " + (c.isCompromised() ? "Compromised" : "Secure"));
+            b.setBackground(c.isCompromised() ? Color.RED : Color.GREEN);
+            b.addActionListener(e -> showComputerDetails(c));
+            computerButtons.add(b);
+            computerPanel.add(b);
         }
-        computerPanel.revalidate(); // Refresh the panel
+        computerPanel.revalidate();
         computerPanel.repaint();
     }
 
-    // Show details of a computer when clicked
-    private static void showComputerDetails(Computer computer) {
-        terminalOutput.append("\nSelected Computer: " + computer.getIPv4() + "\n");
+    private static void showComputerDetails(Computer c) {
+        terminalOutput.append("\nSelected Computer: " + c.getIPv4() + "\n");
         terminalOutput.append("Vulnerabilities:\n");
         for (Vulnerabilities.VulnerabilityType v : Vulnerabilities.VulnerabilityType.values()) {
-            if (computer.isVulnerableTo(v)) {
+            if (c.isVulnerableTo(v)) {
                 terminalOutput.append("- " + v.name() + "\n");
             }
         }
     }
 
-    // Start simulation (trigger network interaction)
     private static void startSimulation() {
-        terminalOutput.append("\nStarting network simulation...\n");
-        for (Computer computer : network) {
-            terminalOutput.append("Scanning computer: " + computer.getIPv4() + "\n");
-            // Example vulnerability check
-            if (computer.isVulnerableTo(Vulnerabilities.VulnerabilityType.OPEN_HTTP_PORT)) {
-                terminalOutput.append("Vulnerability found: Open HTTP Port on " + computer.getIPv4() + "\n");
-            }
-        }
-        // Simulate random network events
+        terminalOutput.append("\nStarting simulation...\n");
         simulateRandomEvents();
     }
 
-    // Simulate random events in the network
     private static void simulateRandomEvents() {
         new Thread(() -> {
             try {
                 while (true) {
-                    Thread.sleep(random.nextInt(5000) + 5000); // Random delay (between 5 to 10 seconds)
+                    Thread.sleep(random.nextInt(5000) + 5000);
                     if (random.nextBoolean()) {
-                        // Random event: Attack
-                        Computer target = network.get(random.nextInt(network.size()));
-                        terminalOutput.append("\nRandom Event: Attack on " + target.getIPv4() + "!\n");
-                        target.compromise();
+                        attackComputer();
                     } else {
-                        // Random event: Send Message
-                        String message = "Random message from network!";
-                        terminalOutput.append("\nRandom Event: Sending message: " + message + "\n");
                         sendMessage();
                     }
                 }
@@ -204,19 +180,23 @@ public class Command_Line {
         }).start();
     }
 
-    // Send a message between computers
     private static void sendMessage() {
         Computer sender = network.get(random.nextInt(network.size()));
         Computer receiver = network.get(random.nextInt(network.size()));
-        terminalOutput.append("\nSending message from " + sender.getIPv4() + " to " + receiver.getIPv4() + "...\n");
-        // Example message content
-        terminalOutput.append("Message content: 'Network status update: Everything looks normal.'\n");
+        String protocol = "TCP";
+        int length = random.nextInt(200) + 60;
+        String info = "Message: 'Hello from " + sender.getIPv4() + "'";
+        String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
+
+        Object[] row = {messageCount++, time, sender.getIPv4(), receiver.getIPv4(), protocol, length, info};
+        tableModel.addRow(row);
+        terminalOutput.append("Message sent from " + sender.getIPv4() + " to " + receiver.getIPv4() + "\n");
     }
 
-    // Attack a computer in the network
     private static void attackComputer() {
         Computer target = network.get(random.nextInt(network.size()));
-        terminalOutput.append("\nAttacking computer: " + target.getIPv4() + "...\n");
-        target.compromise(); // Simulate a compromise attack
+        terminalOutput.append("\n[ALERT] Attack on " + target.getIPv4() + "!\n");
+        target.compromise();
+        displayComputers();
     }
 }
