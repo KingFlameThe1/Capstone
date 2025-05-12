@@ -1,5 +1,5 @@
 Commands
-ip, ip addr, ip route, dig, nslookup [domain] [DNS server], netstat, host, hostname, ping, arp
+ip, ip addr, ip route, dig, nslookup [domain] [DNS server], host, hostname, ping, arp
 
 Tools
 netstat, wireshark
