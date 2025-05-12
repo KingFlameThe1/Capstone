@@ -21,6 +21,7 @@ public class Computer{
     private ArrayList<Integer> ports = new ArrayList<Integer>();
     //private ArrayList<String> vulns = new ArrayList<String>();//vulnerabilities will be handeled in a different class for easy coordination
     private Vulnerabilities vulns;
+    private boolean hasvuln;
 
     public Computer(String IPv4_addr) {
         Random rand = new Random();
@@ -30,6 +31,7 @@ public class Computer{
         Gateway = "192.168.0.1";//can be made into a variable to allow for simulation of multiple networks the user can attempt to access (maybe using a simulated proxy)
         openPorts();
         vulns = new Vulnerabilities();
+        hasvuln = false;
     }
 
     private String genMac(Random rand){
@@ -70,10 +72,28 @@ public class Computer{
 
     public void addVulnerability(Vulnerabilities.VulnerabilityType type) {
         vulns.add(type);
+        hasvuln = true;
+    }
+
+    public boolean isCompromised(){
+        return hasvuln;
     }
 
     public boolean isVulnerableTo(Vulnerabilities.VulnerabilityType type) {
         return vulns.has(type);
+    }
+
+    public String getVulnerabilities(){
+        String vulString = "";
+
+        if (vulns.has(Vulnerabilities.VulnerabilityType.OPEN_HTTP_PORT)){
+            vulString = vulString + "Open_HTTP_Port ";
+        }
+        if (vulns.has(Vulnerabilities.VulnerabilityType.ROGUE_COMMUNICATION)){
+            vulString = vulString + "Rogue_Commnunication ";
+        }
+        
+        return vulString;
     }
 
     public Set<VulnerabilityType> vulnTypes() {

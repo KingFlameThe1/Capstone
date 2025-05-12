@@ -1,12 +1,13 @@
 package src;
 import src.Machines.*;
+import src.ui.*;
 import java.util.ArrayList;
 
 public class main {
     public main(){
         MainMenu menu = new MainMenu(); // Place holder to start main menu
 
-        // Get the network size from the main menu (assuming MainMenu handles this input)
+        /*// Get the network size from the main menu (assuming MainMenu handles this input)
         int networkSize = menu.getNetSize();
 
         // Initialize network and generate computers
@@ -14,7 +15,7 @@ public class main {
         genNetwork(network, networkSize);
 
         // Start the simulation by interacting with the network
-        startSimulation(network);
+        startSimulation(network);*/
     }
 
     // Generate the network of computers
@@ -38,8 +39,8 @@ public class main {
                 // You could simulate an attack here, like exploiting this vulnerability.
             }
             // Example of communication (this could be extended for actual message passing or attack)
-            Message message = new Message("Attacker_IP", computer.getIPv4(), Message.Protocol.TCP.name(), "Hello, computer!");
-            System.out.println("Message sent to " + computer.getIPv4() + ": " + message.msg);
+            //Message message = new Message("Attacker_IP", computer.getIPv4(), Message.Protocol.TCP.name(), "Hello, computer!");
+            //System.out.println("Message sent to " + computer.getIPv4() + ": " + message.getMessage());
         }
     }
 

@@ -1,5 +1,7 @@
 package src.ui;
 
+import src.Machines.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -90,6 +92,9 @@ public class MainMenu {
                 }
                 statusArea.append("Machine " + (i + 1) + " has " + computer.getIPv4() + " with vulnerabilities: " + computer.getVulnerabilities() + "\n");
             }
+
+            CommandLine cmd = new CommandLine(network);
+
 
         } catch (NumberFormatException ex) {
             statusArea.append("Invalid input! Please enter valid numbers.\n");

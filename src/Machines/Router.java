@@ -16,6 +16,6 @@ public class Router {
         this.IPv4_p2 = String.valueOf(num);
     }//has no use right now -- for later implementation
 
-    public String give_IP_addr(){ return IPv4_p1+IPv4_p2+String.valueOf(Math.random()*255 + 1); }
+    public String give_IP_addr(){ return IPv4_p1+IPv4_p2+String.valueOf((int) (Math.random()*255 + 1)); }
     public String get_IP(){return IPv4_p1+IPv4_p2+IPv4_p3;}
 }

@@ -15,7 +15,7 @@ import java.util.Random;
 
 import src.Machines.*;
 
-public class Command_Line {
+public class WireShark {
     private static ArrayList<Computer> network;
     private static JTextArea terminalOutput;
     private static JTextArea packetDetails;
@@ -29,6 +29,10 @@ public class Command_Line {
     private static int messageCount = 1;
 
     public static void main(String[] args) {
+        new MainMenu(); // Initialize the main menu UI
+    }
+
+    public WireShark(){
         random = new Random();
         frame = new JFrame("Network Simulation - Wireshark Style");
         frame.setSize(1000, 700);
@@ -196,7 +200,8 @@ public class Command_Line {
     private static void attackComputer() {
         Computer target = network.get(random.nextInt(network.size()));
         terminalOutput.append("\n[ALERT] Attack on " + target.getIPv4() + "!\n");
-        target.compromise();
+        //target.compromise();
+        target.addVulnerability(Vulnerabilities.VulnerabilityType.OPEN_HTTP_PORT);//can add a function to randomise the vulnerability
         displayComputers();
     }
 }
