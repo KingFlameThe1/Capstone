@@ -1,8 +1,11 @@
 package src.Commands;
+import java.time.chrono.ThaiBuddhistChronology;
 import java.util.ArrayList;
 import src.Machines.*;
 
 public class ping{
+
+    
 
     public void ping(){}
 
@@ -17,8 +20,14 @@ public class ping{
             i+=1;
 
         }
+        ans += "5 packets transmitted, 5 packets recieved, 0.0% packet loss";
         
         return(ans);
+    }
+
+    public static String help(){
+        String discription = "WIP";
+        return(discription);
     }
 
 
