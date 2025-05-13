@@ -32,7 +32,9 @@ public class WireShark {
         new MainMenu(); // Initialize the main menu UI
     }
 
-    public WireShark(){
+    public WireShark(ArrayList<Computer> network){
+        this.network = network;
+
         random = new Random();
         frame = new JFrame("Network Simulation - Wireshark Style");
         frame.setSize(1000, 700);
@@ -171,14 +173,14 @@ public class WireShark {
         new Thread(() -> {
             try {
                 while (true) {
-                    Thread.sleep(random.nextInt(5000) + 5000);
-                    if (random.nextBoolean()) {
-                        attackComputer();
-                    } else {
+                    Thread.sleep(random.nextInt(500) + 500);
+                    //if (random.nextBoolean()) {
+                    //    attackComputer();
+                    //} else {
                         sendMessage();
-                    }
+                    //}
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
@@ -192,9 +194,24 @@ public class WireShark {
         String info = "Message: 'Hello from " + sender.getIPv4() + "'";
         String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-        Object[] row = {messageCount++, time, sender.getIPv4(), receiver.getIPv4(), protocol, length, info};
+        Object[] init = {messageCount++, time, sender.getIPv4(), receiver.getIPv4(), protocol, length, "[SYN]"};
+        tableModel.addRow(init);
+        terminalOutput.append("Message sent from " + sender.getIPv4() + " to " + receiver.getIPv4() + "\n");
+
+        Object[] ack = {messageCount++, time, receiver.getIPv4(), sender.getIPv4(), protocol, length, "[SYN-ACK]"};
+        tableModel.addRow(ack);
+        terminalOutput.append("Message sent from " + sender.getIPv4() + " to " + receiver.getIPv4() + "\n");
+
+        Object[] msg = {messageCount++, time, sender.getIPv4(), receiver.getIPv4(), protocol, length, "[ACK]"};
+        tableModel.addRow(msg);
+        terminalOutput.append("Message sent from " + sender.getIPv4() + " to " + receiver.getIPv4() + "\n");
+
+
+
+        /*Object[] row = {messageCount++, time, sender.getIPv4(), receiver.getIPv4(), protocol, length, info};
         tableModel.addRow(row);
         terminalOutput.append("Message sent from " + sender.getIPv4() + " to " + receiver.getIPv4() + "\n");
+        */
     }
 
     private static void attackComputer() {

@@ -50,7 +50,7 @@ public class CommandLine {
                 // Process the command
                 switch (command.toLowerCase()) {
                     case "wireshark":
-                        WireShark wireShark = new WireShark();
+                        WireShark wireShark = new WireShark(network);
                         break;
                     case "ifconfig":
                         //demonstration --- will swap for a call to a "Commands" object as per MVC architecture
