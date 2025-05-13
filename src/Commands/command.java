@@ -1,8 +1,9 @@
 package src.Commands;
 
 public class command{
-    private String name;
-    private String arg;
+    String name;
+    String arg;
+    String discription;
 
     public command(){}
 
