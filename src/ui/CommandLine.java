@@ -1,12 +1,12 @@
 package src.ui;
 
-import src.Machines.*;
-import java.util.ArrayList;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.*;
 import src.Commands.ifconfig;
+import src.Machines.*;
 
 
 public class CommandLine {
@@ -71,6 +71,10 @@ public class CommandLine {
 
                     case "clear":
                         terminalOutput.setText(""); // Clear terminal output
+                        break;
+                    
+                    case "ping":
+                        //terminalOutput.append();
                         break;
 
                     case "exit":
