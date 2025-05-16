@@ -173,7 +173,7 @@ public class WireShark {
         new Thread(() -> {
             try {
                 while (true) {
-                    Thread.sleep(random.nextInt(500) + 500);
+                    Thread.sleep(random.nextInt(300) + 200);
                     //if (random.nextBoolean()) {
                     //    attackComputer();
                     //} else {
